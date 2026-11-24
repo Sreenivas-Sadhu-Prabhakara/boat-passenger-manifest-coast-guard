@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; form-action 'self'">
+<title>Boat passenger manifest and capacity check for island-hopping operators · Open MSME</title>
+<meta name="description" content="Build a per-voyage passenger manifest for a banca, ferry or dive boat, check passengers plus crew against the vessel's authorised capacity, refuse an over-capacity departure, print the manifest to hand over, and close the voyage when everyone is counted back.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Boat passenger manifest and capacity check for island-hopping operators">
+<meta property="og:description" content="Per-voyage passenger manifest for small Philippine boat operators: capacity refused when over, head count that must match the list, printable manifest, and an arrival record that closes the voyage.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/accent.css">
+<link rel="stylesheet" href="assets/tool.css">
+<script src="assets/theme-init.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <span class="dot"></span>
+      <b>Open MSME</b>
+      <span class="tag">Passenger manifest</span>
+    </a>
+    <span class="sp"></span>
+    <a class="home" href="https://sreenivas-sadhu-prabhakara.github.io/openmsme/">All tools</a>
+    <button class="themer" data-themer type="button">Theme</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Tourism, hospitality &amp; events · Philippines</div>
+      <h1>Boat passenger manifest and capacity check for island-hopping operators</h1>
+      <p class="lede">Lists every person aboard a banca, ferry or dive boat for one voyage, refuses the manifest when passengers plus crew go over the authorised capacity, and closes the trip only when everyone is counted back ashore.</p>
+      <div class="who">
+        <span class="pill">Island-hopping, ferry &amp; dive-boat operators</span>
+        <span class="pill reg">Coast Guard manifest · MARINA capacity</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="cols calc">
+
+      <section class="card">
+        <h2>Voyage</h2>
+
+        <div class="field">
+          <label for="operator">Operator or boat owner</label>
+          <div class="inp"><input type="text" id="operator" autocomplete="off" placeholder="Registered operator name"></div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="vessel">Vessel name</label>
+            <div class="inp"><input type="text" id="vessel" autocomplete="off" placeholder="M/B …"></div>
+          </div>
+          <div class="field">
+            <label for="vesselno">Vessel number</label>
+            <div class="inp"><input type="text" id="vesselno" autocomplete="off" placeholder="As on the certificate"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="capacity">Authorised passenger capacity <span class="hint">required — read it off the vessel's own certificate, crew included. There is no default.</span></label>
+          <div class="inp has-suf">
+            <input type="number" id="capacity" min="1" step="1" inputmode="numeric" placeholder="Type the figure">
+            <span class="suf">persons</span>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="crew">Crew aboard <span class="hint">counts against capacity</span></label>
+            <div class="inp has-suf">
+              <input type="number" id="crew" min="0" step="1" value="2" inputmode="numeric">
+              <span class="suf">crew</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="vests">Life vests aboard <span class="hint">optional</span></label>
+            <div class="inp has-suf">
+              <input type="number" id="vests" min="0" step="1" inputmode="numeric" placeholder="Leave blank if not counted">
+              <span class="suf">vests</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="from">Departure point</label>
+            <div class="inp"><input type="text" id="from" autocomplete="off" placeholder="Port, beach or jump-off"></div>
+          </div>
+          <div class="field">
+            <label for="to">Destination</label>
+            <div class="inp"><input type="text" id="to" autocomplete="off" placeholder="Island, cove or dive site"></div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="depart">Departure date &amp; time</label>
+            <div class="inp"><input type="datetime-local" id="depart"></div>
+          </div>
+          <div class="field">
+            <label for="master">Master in command</label>
+            <div class="inp"><input type="text" id="master" autocomplete="off" placeholder="Name of the master"></div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="masterlic">Master's licence no. <span class="hint">optional</span></label>
+            <div class="inp"><input type="text" id="masterlic" autocomplete="off"></div>
+          </div>
+          <div class="field">
+            <label for="fare">Passage rate per passenger <span class="hint">optional</span></label>
+            <div class="inp has-pre">
+              <span class="pre">₱</span>
+              <input type="number" id="fare" min="0" step="1" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="declared">Head count written on the manifest <span class="hint">passengers only — leave blank to take it from the list</span></label>
+          <div class="inp has-suf">
+            <input type="number" id="declared" min="0" step="1" inputmode="numeric" placeholder="Blank = use the list">
+            <span class="suf">pax</span>
+          </div>
+        </div>
+
+        <div class="ruleset">
+          <h3>Child rule — yours to set</h3>
+          <p>This tool does not know whether your authority counts children differently, so it starts by counting every person aboard as one person. Change it only to match a rule you can point at on your own document.</p>
+          <div class="seg" id="childrule" role="group" aria-label="How children count against capacity">
+            <button type="button" data-child="full" aria-pressed="true">Everyone counts as one</button>
+            <button type="button" data-child="half_under" aria-pressed="false">Children count as half</button>
+            <button type="button" data-child="exempt_under" aria-pressed="false">Children not counted</button>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="childage">A child is under</label>
+              <div class="inp has-suf">
+                <input type="number" id="childage" min="0" max="25" step="1" value="12" inputmode="numeric">
+                <span class="suf">yrs</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="lead">Hand the manifest in</label>
+              <div class="inp has-suf">
+                <input type="number" id="lead" min="0" step="5" value="60" inputmode="numeric">
+                <span class="suf">min before</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ruleset">
+          <h3>Required particulars — yours to set</h3>
+          <p>Name, age and sex are the three the order we cite names. The rest are what operators are commonly asked for after an incident, which we could not source as requirements. Switch them to match what your boarding officer asks for. A row with no name is never accepted.</p>
+          <div class="seg" id="reqset" role="group" aria-label="Particulars required of every passenger"></div>
+        </div>
+
+        <div class="ruleset">
+          <h3>Arrival — closes the voyage</h3>
+          <p>A voyage stays open until the return time and the head count on arrival are both recorded and the count reconciles.</p>
+          <div class="row2">
+            <div class="field">
+              <label for="returnat">Arrival date &amp; time</label>
+              <div class="inp"><input type="datetime-local" id="returnat"></div>
+            </div>
+            <div class="field">
+              <label for="returned">Head count on arrival</label>
+              <div class="inp has-suf">
+                <input type="number" id="returned" min="0" step="1" inputmode="numeric" placeholder="Count everyone back">
+                <span class="suf">persons</span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="arrivalnote">Arrival remarks <span class="hint">optional</span></label>
+            <div class="inp"><input type="text" id="arrivalnote" autocomplete="off" placeholder="Weather, incidents, early return"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card sticky">
+        <h2>Result</h2>
+        <div class="result-primary">
+          <div class="k" id="status-k">Manifest status</div>
+          <div class="v" id="status-v">—</div>
+          <div class="sub" id="status-sub">Enter the authorised capacity and add passengers.</div>
+        </div>
+
+        <div class="issues" id="issues"></div>
+
+        <table class="breakdown">
+          <tbody>
+            <tr><td>Passengers listed</td><td class="num" id="c-listed">0</td></tr>
+            <tr class="sub"><td>— adults</td><td class="num" id="c-adults">0</td></tr>
+            <tr class="sub"><td>— children</td><td class="num" id="c-children">0</td></tr>
+            <tr><td id="c-chargeable-label">Passengers counted against capacity</td><td class="num" id="c-chargeable">0</td></tr>
+            <tr><td>Crew aboard</td><td class="num" id="c-crew">0</td></tr>
+            <tr class="total"><td>Total counted against capacity</td><td class="num" id="c-counted">0</td></tr>
+            <tr><td>Authorised capacity</td><td class="num" id="c-capacity">not set</td></tr>
+            <tr><td>Places remaining</td><td class="num" id="c-remaining">—</td></tr>
+            <tr class="sub"><td>Persons aboard, crew included</td><td class="num" id="c-aboard">0</td></tr>
+            <tr class="sub"><td>Life vests: aboard / needed</td><td class="num" id="c-vests">—</td></tr>
+            <tr class="sub"><td>Hand the manifest in by</td><td class="num" id="c-submit">—</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note" id="refusal-note">An over-capacity manifest is refused here, not warned about: printing stays locked until the number over is taken off the boat.</div>
+
+        <div class="btnrow">
+          <button class="btn ghost" id="print" type="button">Print / Save PDF</button>
+          <button class="btn ghost" id="reset" type="button">Reset</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="card no-print">
+      <h2>Passengers <span class="hint" id="paxcount">0 listed</span></h2>
+
+      <div class="row2">
+        <div class="field">
+          <label for="p-name">Full name</label>
+          <div class="inp"><input type="text" id="p-name" autocomplete="off" placeholder="Surname, first name"></div>
+        </div>
+        <div class="field">
+          <label for="p-age">Age</label>
+          <div class="inp has-suf">
+            <input type="number" id="p-age" min="0" max="120" step="1" inputmode="numeric">
+            <span class="suf">yrs</span>
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="p-sex">Sex</label>
+          <select id="p-sex">
+            <option value="">—</option>
+            <option value="M">M</option>
+            <option value="F">F</option>
+            <option value="X">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="p-nat">Nationality</label>
+          <div class="inp"><input type="text" id="p-nat" autocomplete="off" placeholder="Filipino"></div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="p-contact">Contact number</label>
+          <div class="inp"><input type="text" id="p-contact" autocomplete="off" inputmode="tel"></div>
+        </div>
+        <div class="field">
+          <label for="p-addr">Address</label>
+          <div class="inp"><input type="text" id="p-addr" autocomplete="off"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="p-remarks">Remarks or ticket no. <span class="hint">senior, PWD, minor travelling with …</span></label>
+        <div class="inp"><input type="text" id="p-remarks" autocomplete="off"></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn primary" id="add" type="button">Add passenger</button>
+        <button class="btn ghost" id="clearpax" type="button">Clear the list</button>
+      </div>
+
+      <div class="ruleset">
+        <h3>Or paste the ticket list</h3>
+        <p>One passenger per line, columns separated by tabs, commas, semicolons or pipes, in this order: <code>name, age, sex, nationality, address, contact, remarks</code>. A heading line and row numbers are ignored, and only the name is needed on a line. A name written <code>Dela Cruz, Juan</code> is kept whole: with commas the age is what tells us where the name ends, so if any passenger has <b>no age</b>, separate that list with tabs or semicolons instead. Anything past the last column is added to the remarks rather than dropped. Check the ages and the sex column after pasting — a pasted list is only as good as what you pasted.</p>
+        <div class="field">
+          <label for="roster">Paste here</label>
+          <textarea id="roster" rows="4" spellcheck="false" placeholder="Dela Cruz, Juan, 34, M, Filipino, Tabaco City, 09170000001"></textarea>
+        </div>
+        <div class="btnrow">
+          <button class="btn primary" id="import" type="button">Add pasted passengers</button>
+        </div>
+        <div class="issues" id="import-note"></div>
+      </div>
+
+      <div class="tablewrap">
+        <table class="breakdown">
+          <thead>
+            <tr>
+              <th class="num">#</th><th>Full name</th><th class="num">Age</th><th>Sex</th>
+              <th>Nationality</th><th>Address</th><th>Contact</th><th>Remarks</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="paxrows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section class="card sheet-wrap">
+      <h2 class="no-print">Manifest to hand over</h2>
+      <div id="sheet"></div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section class="card no-print">
+      <h2>Voyage log <span class="hint" id="logsummary">nothing saved yet</span></h2>
+      <p class="assumptions">Saved on this device only, in this browser. Nothing is sent anywhere. Clearing your browser data erases it, so print or save a PDF of every manifest you need to keep.</p>
+      <div class="field">
+        <label for="logfilter">Search the log <span class="hint">vessel, destination, date or passenger name</span></label>
+        <div class="inp"><input type="text" id="logfilter" autocomplete="off" placeholder="Type to filter"></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn primary" id="save" type="button">Save this voyage to the log</button>
+        <button class="btn ghost" id="clearlog" type="button">Clear the log</button>
+      </div>
+      <div class="tablewrap">
+        <table class="breakdown">
+          <thead>
+            <tr>
+              <th>Departed</th><th>Vessel</th><th>To</th><th class="num">Aboard</th>
+              <th class="num">Back</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="logrows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section class="prose">
+      <h2>How it works</h2>
+      <p>One voyage, one manifest. You name the vessel, the master, where you are leaving from and going to, and when; then you list every person boarding. The tool adds up the passengers, applies whatever child rule you have set, adds the crew, and compares that total with the authorised passenger capacity you typed in from the vessel's own certificate. In plain words:</p>
+      <p><code>counted = passengers (after your child rule) + crew</code> and the manifest is issued only if <code>counted ≤ authorised capacity</code>.</p>
+      <p>Six things stop a manifest being issued, and they are refusals, not warnings. No passengers listed. An authorised capacity left blank or zero — the figure is never guessed for you. A total counted over the capacity, in which case the tool names how many persons must come off. A head count written on the manifest that does not equal the names listed. The same passenger entered twice. A required particular missing from any row. Printing stays locked until each one is cleared, because an over-capacity banca is the single most common way people die in this trade.</p>
+      <p>Closing the voyage is a second step. Until you record the arrival time and the head count on arrival, the voyage shows as <b>open</b> and stays open in the log. An arrival earlier than the departure is an error, and a head count on arrival that does not match the number who departed is an error that names how many persons are unaccounted for. That reconciliation is the entire reason a manifest exists.</p>
+      <p>Everything is held in this browser on this device, so it works at the dock with no signal. Nothing is uploaded.</p>
+
+      <h2>What the authority sets, and what we set</h2>
+      <p>Passenger-manifest requirements in the Philippines come from the <b>Philippine Coast Guard</b> and the <b>Maritime Industry Authority (MARINA)</b>, and they differ by vessel and by route. We ship no table of capacities, no copy of any official form and no schedule of fees or fines. Three things we can point at a document for, and we name it: that the persons allowed aboard are limited to the authorised passenger carrying capacity <i>including the crew</i>; that the manifest indicates the name, age and gender of the passengers listed; and that it goes to the nearest Coast Guard unit, with the Master's Oath of Safe Departure, at least one hour before scheduled departure. All three are from <a href="https://elibrary.judiciary.gov.ph/thebookshelf/showdocs/10/40850">DOTC Department Order No. 2000-25</a> (18 April 2000), which is old enough that you should confirm it has not been amended for your route.</p>
+      <p>Everything else in the list below we could not source, so we do not assert it: we give a starting figure, label it indicative, and let you change it. In particular we do not know your vessel's authorised capacity, whether children count differently toward it, or how many life vests of which sizes your authority requires. Check <a href="https://marina.gov.ph/memorandum-circulars/">MARINA's memorandum circulars</a> and <a href="https://coastguard.gov.ph/">the Coast Guard</a> for what is in force, or ask the officer who inspects you.</p>
+
+      <details class="assumptions">
+        <summary>Assumptions &amp; constants</summary>
+        <p>Every figure this tool uses is declared once in <code>assets/manifest.js</code> and printed below. Three are sourced to Department Order 2000-25: crew count against the authorised capacity; name, age and sex are the named particulars; one hour is the lead time for handing the manifest in. The rest are our starting figures, and all of them are yours to override — the authorised capacity has no default at all, by design.</p>
+        <div class="tablewrap">
+          <table class="breakdown">
+            <thead><tr><th>Constant</th><th>Value</th><th>Status</th></tr></thead>
+            <tbody id="constant-rows"></tbody>
+          </table>
+        </div>
+      </details>
+
+      <div class="note">This tool records and prints. It <b>transmits nothing and files nothing</b>: it does not submit a manifest to the Coast Guard, to MARINA, to a port authority or to anyone else, and it has no network access of any kind. Handing the manifest in is still your job, by whatever means your boarding officer requires. The printed sheet is a complete record of the voyage, not a reproduction of any prescribed form — we do not reproduce official forms because we cannot verify which version is current, so copy the particulars onto the form you are given if you are given one. It is not legal advice, it does not clear you to sail, and it is no substitute for the inspection, the certificates or the master's judgement. Where this tool and the document in your hand disagree, the document wins.</div>
+    </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Open MSME · open-source tool for MSMEs in India &amp; the Philippines · MIT</span>
+    <span><a href="https://sreenivas-sadhu-prabhakara.github.io/openmsme/">All tools</a></span>
+  </div>
+</footer>
+
+<script src="assets/ui.js"></script>
+<script src="assets/manifest.js"></script>
+<script src="assets/calc.js"></script>
+</body>
+</html>

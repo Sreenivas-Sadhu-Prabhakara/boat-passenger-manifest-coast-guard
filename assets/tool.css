@@ -1,0 +1,84 @@
+/* Tool-specific classes: the issue list, the passenger table and the manifest
+   sheet the operator hands over. Kit variables only — no fonts, no colours and
+   no sizes of its own, and nothing inline. */
+
+/* ---- textarea, which the kit does not style ---- */
+textarea {
+  width: 100%; font: inherit; font-size: .95rem; padding: 11px 13px; border-radius: 9px;
+  border: 1px solid var(--line-2); background: var(--surface); color: var(--ink);
+  resize: vertical; min-height: 92px;
+}
+textarea:focus { outline: 2px solid var(--tool); outline-offset: 1px; border-color: var(--tool); }
+
+/* ---- a wide table scrolls inside its own box, never the page ---- */
+.tablewrap { overflow-x: auto; max-width: 100%; }
+.tablewrap .breakdown { min-width: 640px; }
+.breakdown td .seg button { padding: 4px 8px; font-size: .74rem; }
+.seg button[disabled] { opacity: .8; cursor: not-allowed; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn[disabled]:hover { filter: none; }
+
+/* ---- blockers and warnings ---- */
+.issues { margin: 0 0 4px; }
+.issue {
+  font-size: .85rem; border: 1px solid var(--line); border-left: 3px solid var(--line-2);
+  border-radius: 8px; padding: 9px 12px; margin: 8px 0; background: var(--surface-2);
+  color: var(--ink-2);
+}
+.issue.block { border-left-color: var(--bad); color: var(--ink); }
+.issue.warn { border-left-color: var(--warn); }
+.issue .code {
+  display: block; font-family: var(--mono); font-size: .68rem; letter-spacing: .04em;
+  color: var(--ink-3); margin-bottom: 2px;
+}
+.issue.good { border-left-color: var(--ok); }
+
+/* ---- the fieldset-ish rule groups ---- */
+.ruleset { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; }
+.ruleset h3 { margin: 0 0 4px; font-size: .95rem; }
+.ruleset p { margin: 0 0 12px; font-size: .8rem; color: var(--ink-3); }
+
+/* ---- the manifest sheet ---- */
+.sheet-head { border-bottom: 2px solid var(--line-2); padding-bottom: 10px; margin-bottom: 14px; }
+.sheet-head h3 { margin: 0; font-size: 1.05rem; }
+.sheet-head .sheet-sub { font-size: .8rem; color: var(--ink-3); margin-top: 3px; }
+.sheet-grid { display: grid; grid-template-columns: 1fr; gap: 0 20px; margin: 0 0 14px; }
+@media (min-width: 560px) { .sheet-grid { grid-template-columns: 1fr 1fr; } }
+.sheet-grid div {
+  font-size: .85rem; border-bottom: 1px dotted var(--line); padding: 4px 0;
+  display: flex; gap: 10px; align-items: baseline;
+}
+.sheet-grid b {
+  font-weight: 600; color: var(--ink-3); font-size: .76rem;
+  min-width: 13ch; flex: 0 0 auto;
+}
+.sheet-stamp {
+  border: 2px solid var(--line-2); border-radius: 8px; padding: 9px 12px;
+  margin: 14px 0; font-size: .88rem; font-weight: 600;
+}
+.sheet-stamp.refused { border-color: var(--bad); color: var(--bad); }
+.sheet-stamp.open { border-color: var(--warn); color: var(--warn); }
+.sheet-stamp.closed { border-color: var(--ok); color: var(--ok); }
+.sigrow { display: grid; grid-template-columns: 1fr; gap: 10px 26px; margin-top: 10px; }
+@media (min-width: 560px) { .sigrow { grid-template-columns: 1fr 1fr; } }
+.sig {
+  border-top: 1px solid var(--ink-3); margin-top: 38px; padding-top: 5px;
+  font-size: .76rem; color: var(--ink-3);
+}
+.sheet-note { font-size: .74rem; color: var(--ink-3); margin-top: 16px; }
+
+/* ---- print: the sheet alone, on paper the operator can hand over ---- */
+@media print {
+  .topbar, .hero, .cols, .prose, .no-print { display: none; }
+  .wrap { max-width: none; padding: 0; }
+  .sheet-wrap { display: block; }
+  .tablewrap { overflow: visible; }
+  .tablewrap .breakdown { min-width: 0; }
+  .breakdown { font-size: 8.5pt; }
+  .breakdown th, .breakdown td { padding: 3px 4px; }
+  .sheet-grid div { font-size: 9pt; padding: 2px 0; }
+  .sheet-head h3 { font-size: 13pt; }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; }
+  .sheet-stamp { page-break-inside: avoid; }
+}
